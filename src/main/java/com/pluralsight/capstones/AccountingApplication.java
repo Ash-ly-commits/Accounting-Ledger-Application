@@ -1,7 +1,5 @@
 package com.pluralsight.capstones;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -57,5 +55,41 @@ public class AccountingApplication {
             System.out.println("failure opening transactions");
         }
         return ledger;
+    }
+
+    public static void makeDeposit() {
+        LocalDate date = LocalDate.now();
+        LocalTime time = LocalTime.now();
+        System.out.print("Enter description for deposit: ");
+        String description = scanner.nextLine();
+        System.out.print("Enter vendor name: ");
+        String vendor = scanner.nextLine();
+        System.out.print("Enter amount: ");
+        float amount = scanner.nextFloat();
+        ledger.add(new Transactions(date, time, description, vendor, amount));
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("transactions.csv", true))) {
+            writer.write(date + "|" + time + "|" + description + "|" + vendor + "|" + amount);
+        } catch (IOException e) {
+            System.out.println("failure writing to transactions");
+        }
+    }
+
+    public static void makePayment(){
+        LocalDate date = LocalDate.now();
+        LocalTime time = LocalTime.now();
+        System.out.print("Enter description for payment: ");
+        String description = scanner.nextLine();
+        System.out.print("Enter vendor name: ");
+        String vendor = scanner.nextLine();
+        System.out.print("Enter amount: ");
+        float amount = -scanner.nextFloat();
+        ledger.add(new Transactions(date, time, description, vendor, amount));
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("transactions.csv", true))) {
+            writer.write(date + "|" + time + "|" + description + "|" + vendor + "|" + amount);
+        } catch (IOException e) {
+            System.out.println("failure writing to transactions");
+        }
     }
 }
