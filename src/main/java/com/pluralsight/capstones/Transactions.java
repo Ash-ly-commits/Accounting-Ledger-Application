@@ -1,16 +1,16 @@
 package com.pluralsight.capstones;
 
-import java.sql.Time;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 public class Transactions {
-    private final Date date;
-    private final Time time;
+    private final LocalDate date;
+    private final LocalTime time;
     private final String description;
     private final String vendor;
     private final float amount;
 
-    public Transactions(Date date, Time time, String description, String vendor, float amount) {
+    public Transactions(LocalDate date, LocalTime time, String description, String vendor, float amount) {
         this.date = date;
         this.time = time;
         this.description = description;
@@ -18,11 +18,11 @@ public class Transactions {
         this.amount = amount;
     }
 
-    public Date getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public Time getTime() {
+    public LocalTime getTime() {
         return time;
     }
 
