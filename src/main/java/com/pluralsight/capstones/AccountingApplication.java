@@ -6,6 +6,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class AccountingApplication {
     private static final Scanner scanner = new Scanner(System.in);
@@ -69,11 +70,12 @@ public class AccountingApplication {
         String vendor = scanner.nextLine();
         System.out.print("Enter amount: ");
         float amount = scanner.nextFloat();
+        amount = Math.round(amount * 100) / 100.0f; // Formats amount to 2 decimal places
         scanner.nextLine();
         ledger.add(new Transactions(date, time, description, vendor, amount));
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("transactions.csv", true))) {
-            writer.write("\n" + date + "|" + time + "|" + description + "|" + vendor + "|" + amount);
+            writer.write(String.format("\n%s|%s|%s|%s|%.2f", date, time.toString(), description, vendor, amount));
         } catch (IOException e) {
             System.out.println("failure writing to transactions");
         }
@@ -88,11 +90,12 @@ public class AccountingApplication {
         String vendor = scanner.nextLine();
         System.out.print("Enter amount: ");
         float amount = -scanner.nextFloat();
+        amount = Math.round(amount * 100) / 100.0f;
         scanner.nextLine();
         ledger.add(new Transactions(date, time, description, vendor, amount));
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("transactions.csv", true))) {
-            writer.write("\n" + date + "|" + time + "|" + description + "|" + vendor + "|" + amount);
+            writer.write(String.format("\n%s|%s|%s|%s|%.2f", date, time.toString(), description, vendor, amount));
         } catch (IOException e) {
             System.out.println("failure writing to transactions");
         }
@@ -116,16 +119,16 @@ public class AccountingApplication {
                 case 'A':
                     ledger.sort(Comparator.comparing(Transactions::getDate).thenComparing(Transactions::getTime));
                     for (Transactions t : ledger) {
-                        System.out.print(t.getDate() + "|" + t.getTime()+ "|" + t.getDescription() + "|"
-                                + t.getVendor() + "|" + t.getAmount());
+                        System.out.printf("%s|%s|%s|%s|%.2f\n",t.getDate().toString(),t.getTime().toString(),
+                                t.getDescription(),t.getVendor(),t.getAmount());
                     }
                     break;
                 case 'D':
                     ledger.sort(Comparator.comparing(Transactions::getDate).thenComparing(Transactions::getTime));
                     for (Transactions t : ledger) {
                         if(t.getAmount() > 0){
-                            System.out.print(t.getDate() + "|" + t.getTime()+ "|" + t.getDescription() + "|"
-                                    + t.getVendor() + "|" + t.getAmount());
+                            System.out.printf("%s|%s|%s|%s|%.2f\n",t.getDate().toString(),t.getTime().toString(),
+                                    t.getDescription(),t.getVendor(),t.getAmount());
                         }
                     }
                     break;
@@ -133,8 +136,8 @@ public class AccountingApplication {
                     ledger.sort(Comparator.comparing(Transactions::getDate).thenComparing(Transactions::getTime));
                     for (Transactions t : ledger) {
                         if(t.getAmount() < 0){
-                            System.out.print(t.getDate() + "|" + t.getTime()+ "|" + t.getDescription() + "|"
-                                    + t.getVendor() + "|" + t.getAmount());
+                            System.out.printf("%s|%s|%s|%s|%.2f\n",t.getDate().toString(),t.getTime().toString(),
+                                    t.getDescription(),t.getVendor(),t.getAmount());
                         }
                     }
                     break;
@@ -169,8 +172,8 @@ public class AccountingApplication {
                     ledger.sort(Comparator.comparing(Transactions::getDate).thenComparing(Transactions::getTime));
                     for (Transactions t : ledger) {
                         if((t.getDate().getMonthValue() == current.getMonthValue()) && (t.getDate().getYear() == current.getYear())){
-                            System.out.print(t.getDate() + "|" + t.getTime()+ "|" + t.getDescription() + "|"
-                                    + t.getVendor() + "|" + t.getAmount() + "\n");
+                            System.out.printf("%s|%s|%s|%s|%.2f\n",t.getDate().toString(),t.getTime().toString(),
+                                    t.getDescription(),t.getVendor(),t.getAmount());
                         }
                     }
                     break;
@@ -178,8 +181,8 @@ public class AccountingApplication {
                     ledger.sort(Comparator.comparing(Transactions::getDate).thenComparing(Transactions::getTime));
                     for (Transactions t : ledger) {
                         if((t.getDate().getMonthValue() == (current.getMonthValue()-1)) && (t.getDate().getYear() == current.getYear())){
-                            System.out.print(t.getDate() + "|" + t.getTime()+ "|" + t.getDescription() + "|"
-                                    + t.getVendor() + "|" + t.getAmount() + "\n");
+                            System.out.printf("%s|%s|%s|%s|%.2f\n",t.getDate().toString(),t.getTime().toString(),
+                                    t.getDescription(),t.getVendor(),t.getAmount());
                         }
                     }
                     break;
@@ -187,8 +190,8 @@ public class AccountingApplication {
                     ledger.sort(Comparator.comparing(Transactions::getDate).thenComparing(Transactions::getTime));
                     for (Transactions t : ledger) {
                         if(t.getDate().getYear() == current.getYear()){
-                            System.out.print(t.getDate() + "|" + t.getTime()+ "|" + t.getDescription() + "|"
-                                    + t.getVendor() + "|" + t.getAmount() + "\n");
+                            System.out.printf("%s|%s|%s|%s|%.2f\n",t.getDate().toString(),t.getTime().toString(),
+                                    t.getDescription(),t.getVendor(),t.getAmount());
                         }
                     }
                     break;
@@ -196,8 +199,8 @@ public class AccountingApplication {
                     ledger.sort(Comparator.comparing(Transactions::getDate).thenComparing(Transactions::getTime));
                     for (Transactions t : ledger) {
                         if(t.getDate().getYear() == (current.getYear()-1)){
-                            System.out.print(t.getDate() + "|" + t.getTime()+ "|" + t.getDescription() + "|"
-                                    + t.getVendor() + "|" + t.getAmount() + "\n");
+                            System.out.printf("%s|%s|%s|%s|%.2f\n",t.getDate().toString(),t.getTime().toString(),
+                                    t.getDescription(),t.getVendor(),t.getAmount());
                         }
                     }
                     break;
@@ -207,15 +210,52 @@ public class AccountingApplication {
                     ledger.sort(Comparator.comparing(Transactions::getDate).thenComparing(Transactions::getTime));
                     for (Transactions t : ledger) {
                         if(vendor.equalsIgnoreCase(t.getVendor())){
-                            System.out.print(t.getDate() + "|" + t.getTime()+ "|" + t.getDescription() + "|"
-                                    + t.getVendor() + "|" + t.getAmount() + "\n");
+                            System.out.printf("%s|%s|%s|%s|%.2f\n",t.getDate().toString(),t.getTime().toString(),
+                                    t.getDescription(),t.getVendor(),t.getAmount());
                         }
                     }
+                    break;
+                case 6:
+                    customSearch();
                     break;
                 case 0:
                     System.out.println("Back to Ledger...");
                     break;
             }
+        }
+    }
+
+    public static void customSearch(){
+        System.out.println("\nCustom Search\nEnter only the values you want to filter by ->");
+        System.out.print("Start Date (YYYY-MM-DD): ");
+        String startDate = scanner.nextLine();
+        System.out.print("End Date (YYYY-MM-DD): ");
+        String endDate = scanner.nextLine();
+        System.out.print("Description: ");
+        String description = scanner.nextLine();
+        System.out.print("Vendor: ");
+        String vendor = scanner.nextLine();
+        System.out.print("Amount: ");
+        String amountStr = scanner.nextLine();
+
+        Float amount = amountStr.isEmpty() ? null : Float.parseFloat(amountStr);
+        LocalDate start = startDate.isEmpty() ? null : LocalDate.parse(startDate);
+        LocalDate end = endDate.isEmpty() ? null : LocalDate.parse(endDate);
+
+        // Creates stream of Transaction objects that is filtered to user specifications
+        ArrayList<Transactions> report = ledger.stream()
+                .filter(e -> (start == null || !e.getDate().isBefore(start)))
+                .filter(e -> (end == null || !e.getDate().isAfter(end)))
+                .filter(e -> (description.isEmpty() || e.getDescription().contains(description)))
+                .filter(e -> (vendor.isEmpty() || e.getVendor().contains(vendor)))
+                .filter(e -> (amount == null || e.getAmount() == amount))
+                .sorted(Comparator.comparing(Transactions::getDate)
+                        .thenComparing(Transactions::getTime))
+                .collect(Collectors.toCollection(ArrayList::new));
+
+        for (Transactions t : report) {
+            System.out.printf("%s|%s|%s|%s|%.2f\n",t.getDate().toString(),t.getTime().toString(),
+                    t.getDescription(),t.getVendor(),t.getAmount());
         }
     }
 }
