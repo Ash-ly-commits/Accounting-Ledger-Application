@@ -142,4 +142,75 @@ public class AccountingApplication {
             }
         }
     }
+
+    public static void reports(){
+        String reportsScreenMenu = """
+                \nReports Display
+                1) Month To Date
+                2) Previous Month
+                3) Year To Date
+                4) Previous Year
+                5) Search by Vendor
+                0) Back
+                Enter command:\t""";
+        int command = 6;
+        while(!(command == 0)) {
+            System.out.print(reportsScreenMenu);
+            command = scanner.nextInt();
+            scanner.nextLine();
+            LocalDate current = LocalDate.now();
+            switch (command) {
+                case 1:
+                    ledger.sort(Comparator.comparing(Transactions::getDate).thenComparing(Transactions::getTime));
+                    for (Transactions t : ledger) {
+                        if(t.getDate().getMonthValue() == current.getMonthValue()){
+                            System.out.print(t.getDate() + "|" + t.getTime()+ "|" + t.getDescription() + "|"
+                                    + t.getVendor() + "|" + t.getAmount() + "\n");
+                        }
+                    }
+                    break;
+                case 2:
+                    ledger.sort(Comparator.comparing(Transactions::getDate).thenComparing(Transactions::getTime));
+                    for (Transactions t : ledger) {
+                        if(t.getDate().getMonthValue() == (current.getMonthValue()-1)){
+                            System.out.print(t.getDate() + "|" + t.getTime()+ "|" + t.getDescription() + "|"
+                                    + t.getVendor() + "|" + t.getAmount() + "\n");
+                        }
+                    }
+                    break;
+                case 3:
+                    ledger.sort(Comparator.comparing(Transactions::getDate).thenComparing(Transactions::getTime));
+                    for (Transactions t : ledger) {
+                        if(t.getDate().getYear() == current.getYear()){
+                            System.out.print(t.getDate() + "|" + t.getTime()+ "|" + t.getDescription() + "|"
+                                    + t.getVendor() + "|" + t.getAmount() + "\n");
+                        }
+                    }
+                    break;
+                case 4:
+                    ledger.sort(Comparator.comparing(Transactions::getDate).thenComparing(Transactions::getTime));
+                    for (Transactions t : ledger) {
+                        if(t.getDate().getYear() == (current.getYear()-1)){
+                            System.out.print(t.getDate() + "|" + t.getTime()+ "|" + t.getDescription() + "|"
+                                    + t.getVendor() + "|" + t.getAmount() + "\n");
+                        }
+                    }
+                    break;
+                case 5:
+                    System.out.print("Enter the vendor name: ");
+                    String vendor = scanner.nextLine();
+                    ledger.sort(Comparator.comparing(Transactions::getDate).thenComparing(Transactions::getTime));
+                    for (Transactions t : ledger) {
+                        if(vendor.equalsIgnoreCase(t.getVendor())){
+                            System.out.print(t.getDate() + "|" + t.getTime()+ "|" + t.getDescription() + "|"
+                                    + t.getVendor() + "|" + t.getAmount() + "\n");
+                        }
+                    }
+                    break;
+                case 0:
+                    System.out.println("Back to Ledger...");
+                    break;
+            }
+        }
+    }
 }
