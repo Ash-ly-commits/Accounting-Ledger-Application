@@ -59,13 +59,16 @@ public class AccountingApplication {
         return ledger;
     }
 
+    public static String askUserStr(String prompt){
+        System.out.print(prompt);
+        return scanner.nextLine();
+    }
+
     public static void makeTransaction(char command){
         LocalDate date = LocalDate.now();
         LocalTime time = LocalTime.now().truncatedTo(ChronoUnit.SECONDS);
-        System.out.print("Enter description for transaction: ");
-        String description = scanner.nextLine();
-        System.out.print("Enter vendor name: ");
-        String vendor = scanner.nextLine();
+        String description = askUserStr("Enter description for transaction: ");
+        String vendor = askUserStr("Enter vendor name: ");
         System.out.print("Enter amount: ");
         float amount = scanner.nextFloat();
         if (command == 'P') {
@@ -207,16 +210,11 @@ public class AccountingApplication {
 
     public static void customSearch(){
         System.out.println("\nCustom Search\nEnter only the values you want to filter by ->");
-        System.out.print("Start Date (YYYY-MM-DD): ");
-        String startDate = scanner.nextLine();
-        System.out.print("End Date (YYYY-MM-DD): ");
-        String endDate = scanner.nextLine();
-        System.out.print("Description: ");
-        String description = scanner.nextLine();
-        System.out.print("Vendor: ");
-        String vendor = scanner.nextLine();
-        System.out.print("Amount: ");
-        String amountStr = scanner.nextLine();
+        String startDate = askUserStr("Start Date (YYYY-MM-DD): ");
+        String endDate = askUserStr("End Date (YYYY-MM-DD): ");
+        String description = askUserStr("Description: ");
+        String vendor = askUserStr("Vendor: ");
+        String amountStr = askUserStr("Amount: ");
 
         Float amount = amountStr.isEmpty() ? null : Float.parseFloat(amountStr);
         LocalDate start = startDate.isEmpty() ? null : LocalDate.parse(startDate);
