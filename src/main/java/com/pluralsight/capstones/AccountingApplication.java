@@ -20,7 +20,7 @@ public class AccountingApplication {
                 P) Make Payment (Debit)
                 L) Ledger
                 X) Exit
-                Enter command:\t""";
+                Enter option:\t""";
         char command = 'c';
         while(!(command == 'x')) {
             System.out.print(homeScreenMenu);
@@ -56,7 +56,7 @@ public class AccountingApplication {
                 ledger.add(new Transactions(localDate, localTime, description, vendor, amount));
             }
         } catch (IOException e) {
-            System.out.println("failure opening transactions");
+            System.err.println("Error reading file: " + e.getMessage());
         }
         return ledger;
     }
@@ -68,7 +68,7 @@ public class AccountingApplication {
 
     public static void displayLedger(Predicate<Transactions> condition) {
         // Sorts the transactions by date and time
-        ledger.sort(Comparator.comparing(Transactions::getDate).thenComparing(Transactions::getTime));
+        ledger.sort(Comparator.comparing(Transactions::getDate).thenComparing(Transactions::getTime).reversed());
         for (Transactions t : ledger) {
             if (condition.test(t)) {
                 System.out.printf("%s|%s|%s|%s|%.2f\n",
@@ -88,9 +88,10 @@ public class AccountingApplication {
         ledger.add(new Transactions(date, time, description, vendor, amount));
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("transactions.csv", true))) {
-            writer.write(String.format("\n%s|%s|%s|%s|%.2f", date, time.toString(), description, vendor, amount));
+            writer.write(System.lineSeparator());
+            writer.write(String.format("%s|%s|%s|%s|%.2f", date, time.toString(), description, vendor, amount));
         } catch (IOException e) {
-            System.out.println("failure writing to transactions");
+            System.err.println("Error writing to file: " + e.getMessage());
         }
     }
 
@@ -102,7 +103,7 @@ public class AccountingApplication {
                 P) Payments
                 R) Reports
                 H) Home
-                Enter command:\t""";
+                Enter option:\t""";
         char command = 'c';
         while(!(command == 'H')) {
             System.out.print(ledgerScreenMenu);
@@ -111,11 +112,7 @@ public class AccountingApplication {
             scanner.nextLine();
             switch (command) {
                 case 'A':
-                    ledger.sort(Comparator.comparing(Transactions::getDate).thenComparing(Transactions::getTime));
-                    for (Transactions t : ledger) {
-                        System.out.printf("%s|%s|%s|%s|%.2f\n",t.getDate().toString(),t.getTime().toString(),
-                                t.getDescription(),t.getVendor(),t.getAmount());
-                    }
+                    displayLedger(t -> true);
                     break;
                 case 'D':
                     displayLedger(t -> t.getAmount() > 0);
@@ -143,7 +140,7 @@ public class AccountingApplication {
                 5) Search by Vendor
                 6) Custom Search
                 0) Back
-                Enter command:\t""";
+                Enter option:\t""";
         int command = 6;
         while(!(command == 0)) {
             System.out.print(reportsScreenMenu);
@@ -199,7 +196,7 @@ public class AccountingApplication {
                 .filter(e -> (vendor.isEmpty() || e.getVendor().contains(vendor)))
                 .filter(e -> (amount == null || e.getAmount() == amount))
                 .sorted(Comparator.comparing(Transactions::getDate)
-                        .thenComparing(Transactions::getTime))
+                        .thenComparing(Transactions::getTime).reversed())
                 .collect(Collectors.toCollection(ArrayList::new));
 
         for (Transactions t : report) {
