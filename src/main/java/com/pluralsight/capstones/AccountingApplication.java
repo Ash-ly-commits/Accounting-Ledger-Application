@@ -3,6 +3,7 @@ import java.io.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Scanner;
 
 public class AccountingApplication {
@@ -90,6 +91,55 @@ public class AccountingApplication {
             writer.write(date + "|" + time + "|" + description + "|" + vendor + "|" + amount);
         } catch (IOException e) {
             System.out.println("failure writing to transactions");
+        }
+    }
+
+    public static void ledgerScreen(){
+        String ledgerScreenMenu = """
+                \nLedger Display
+                A) All
+                D) Deposits
+                P) Payments
+                R) Reports
+                H) Home
+                Enter command:\t""";
+        char command = 'c';
+        while(!(command == 'H')) {
+            System.out.print(ledgerScreenMenu);
+            command = scanner.next().charAt(0);
+            switch (command) {
+                case 'A':
+                    ledger.sort(Comparator.comparing(Transactions::getDate).thenComparing(Transactions::getTime));
+                    for (Transactions t : ledger) {
+                        System.out.print(t.getDate() + "|" + t.getTime()+ "|" + t.getDescription() + "|"
+                                + t.getVendor() + "|" + t.getAmount());
+                    }
+                    break;
+                case 'D':
+                    ledger.sort(Comparator.comparing(Transactions::getDate).thenComparing(Transactions::getTime));
+                    for (Transactions t : ledger) {
+                        if(t.getAmount() > 0){
+                            System.out.print(t.getDate() + "|" + t.getTime()+ "|" + t.getDescription() + "|"
+                                    + t.getVendor() + "|" + t.getAmount());
+                        }
+                    }
+                    break;
+                case 'P':
+                    ledger.sort(Comparator.comparing(Transactions::getDate).thenComparing(Transactions::getTime));
+                    for (Transactions t : ledger) {
+                        if(t.getAmount() < 0){
+                            System.out.print(t.getDate() + "|" + t.getTime()+ "|" + t.getDescription() + "|"
+                                    + t.getVendor() + "|" + t.getAmount());
+                        }
+                    }
+                    break;
+                case 'R':
+                    reports();
+                    break;
+                case 'H':
+                    System.out.println("Back to Home...");
+                    break;
+            }
         }
     }
 }
