@@ -6,6 +6,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Scanner;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class AccountingApplication {
@@ -24,6 +25,7 @@ public class AccountingApplication {
         while(!(command == 'x')) {
             System.out.print(homeScreenMenu);
             command = scanner.next().charAt(0);
+            command = Character.toUpperCase(command);
             scanner.nextLine();
             switch (command) {
                 case 'D':
@@ -64,6 +66,16 @@ public class AccountingApplication {
         return scanner.nextLine();
     }
 
+    public static void displayLedger(Predicate<Transactions> condition) {
+        ledger.sort(Comparator.comparing(Transactions::getDate).thenComparing(Transactions::getTime));
+        for (Transactions t : ledger) {
+            if (condition.test(t)) {
+                System.out.printf("%s|%s|%s|%s|%.2f\n",
+                        t.getDate(), t.getTime(), t.getDescription(), t.getVendor(), t.getAmount());
+            }
+        }
+    }
+
     public static void makeTransaction(char command){
         LocalDate date = LocalDate.now();
         LocalTime time = LocalTime.now().truncatedTo(ChronoUnit.SECONDS);
@@ -97,6 +109,7 @@ public class AccountingApplication {
         while(!(command == 'H')) {
             System.out.print(ledgerScreenMenu);
             command = scanner.next().charAt(0);
+            command = Character.toUpperCase(command);
             scanner.nextLine();
             switch (command) {
                 case 'A':
@@ -107,22 +120,10 @@ public class AccountingApplication {
                     }
                     break;
                 case 'D':
-                    ledger.sort(Comparator.comparing(Transactions::getDate).thenComparing(Transactions::getTime));
-                    for (Transactions t : ledger) {
-                        if(t.getAmount() > 0){
-                            System.out.printf("%s|%s|%s|%s|%.2f\n",t.getDate().toString(),t.getTime().toString(),
-                                    t.getDescription(),t.getVendor(),t.getAmount());
-                        }
-                    }
+                    displayLedger(t -> t.getAmount() > 0);
                     break;
                 case 'P':
-                    ledger.sort(Comparator.comparing(Transactions::getDate).thenComparing(Transactions::getTime));
-                    for (Transactions t : ledger) {
-                        if(t.getAmount() < 0){
-                            System.out.printf("%s|%s|%s|%s|%.2f\n",t.getDate().toString(),t.getTime().toString(),
-                                    t.getDescription(),t.getVendor(),t.getAmount());
-                        }
-                    }
+                    displayLedger(t -> t.getAmount() < 0);
                     break;
                 case 'R':
                     reports();
@@ -142,6 +143,7 @@ public class AccountingApplication {
                 3) Year To Date
                 4) Previous Year
                 5) Search by Vendor
+                6) Custom Search
                 0) Back
                 Enter command:\t""";
         int command = 6;
@@ -152,51 +154,23 @@ public class AccountingApplication {
             LocalDate current = LocalDate.now();
             switch (command) {
                 case 1:
-                    ledger.sort(Comparator.comparing(Transactions::getDate).thenComparing(Transactions::getTime));
-                    for (Transactions t : ledger) {
-                        if((t.getDate().getMonthValue() == current.getMonthValue()) && (t.getDate().getYear() == current.getYear())){
-                            System.out.printf("%s|%s|%s|%s|%.2f\n",t.getDate().toString(),t.getTime().toString(),
-                                    t.getDescription(),t.getVendor(),t.getAmount());
-                        }
-                    }
+                    displayLedger(t -> (t.getDate().getMonthValue() == current.getMonthValue()) &&
+                            (t.getDate().getYear() == current.getYear()));
                     break;
                 case 2:
-                    ledger.sort(Comparator.comparing(Transactions::getDate).thenComparing(Transactions::getTime));
-                    for (Transactions t : ledger) {
-                        if((t.getDate().getMonthValue() == (current.getMonthValue()-1)) && (t.getDate().getYear() == current.getYear())){
-                            System.out.printf("%s|%s|%s|%s|%.2f\n",t.getDate().toString(),t.getTime().toString(),
-                                    t.getDescription(),t.getVendor(),t.getAmount());
-                        }
-                    }
+                    displayLedger(t -> (t.getDate().getMonthValue() == (current.getMonthValue()-1)) &&
+                            (t.getDate().getYear() == current.getYear()));
                     break;
                 case 3:
-                    ledger.sort(Comparator.comparing(Transactions::getDate).thenComparing(Transactions::getTime));
-                    for (Transactions t : ledger) {
-                        if(t.getDate().getYear() == current.getYear()){
-                            System.out.printf("%s|%s|%s|%s|%.2f\n",t.getDate().toString(),t.getTime().toString(),
-                                    t.getDescription(),t.getVendor(),t.getAmount());
-                        }
-                    }
+                    displayLedger(t -> t.getDate().getYear() == current.getYear());
                     break;
                 case 4:
-                    ledger.sort(Comparator.comparing(Transactions::getDate).thenComparing(Transactions::getTime));
-                    for (Transactions t : ledger) {
-                        if(t.getDate().getYear() == (current.getYear()-1)){
-                            System.out.printf("%s|%s|%s|%s|%.2f\n",t.getDate().toString(),t.getTime().toString(),
-                                    t.getDescription(),t.getVendor(),t.getAmount());
-                        }
-                    }
+                    displayLedger(t -> t.getDate().getYear() == (current.getYear()-1));
                     break;
                 case 5:
                     System.out.print("Enter the vendor name: ");
                     String vendor = scanner.nextLine();
-                    ledger.sort(Comparator.comparing(Transactions::getDate).thenComparing(Transactions::getTime));
-                    for (Transactions t : ledger) {
-                        if(vendor.equalsIgnoreCase(t.getVendor())){
-                            System.out.printf("%s|%s|%s|%s|%.2f\n",t.getDate().toString(),t.getTime().toString(),
-                                    t.getDescription(),t.getVendor(),t.getAmount());
-                        }
-                    }
+                    displayLedger(t -> vendor.equalsIgnoreCase(t.getVendor()));
                     break;
                 case 6:
                     customSearch();
