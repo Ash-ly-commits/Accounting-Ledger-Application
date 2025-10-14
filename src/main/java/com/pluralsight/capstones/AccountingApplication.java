@@ -168,7 +168,7 @@ public class AccountingApplication {
                 case 1:
                     ledger.sort(Comparator.comparing(Transactions::getDate).thenComparing(Transactions::getTime));
                     for (Transactions t : ledger) {
-                        if(t.getDate().getMonthValue() == current.getMonthValue()){
+                        if((t.getDate().getMonthValue() == current.getMonthValue()) && (t.getDate().getYear() == current.getYear())){
                             System.out.print(t.getDate() + "|" + t.getTime()+ "|" + t.getDescription() + "|"
                                     + t.getVendor() + "|" + t.getAmount() + "\n");
                         }
@@ -177,7 +177,7 @@ public class AccountingApplication {
                 case 2:
                     ledger.sort(Comparator.comparing(Transactions::getDate).thenComparing(Transactions::getTime));
                     for (Transactions t : ledger) {
-                        if(t.getDate().getMonthValue() == (current.getMonthValue()-1)){
+                        if((t.getDate().getMonthValue() == (current.getMonthValue()-1)) && (t.getDate().getYear() == current.getYear())){
                             System.out.print(t.getDate() + "|" + t.getTime()+ "|" + t.getDescription() + "|"
                                     + t.getVendor() + "|" + t.getAmount() + "\n");
                         }
