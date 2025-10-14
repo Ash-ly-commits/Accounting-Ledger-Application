@@ -23,6 +23,7 @@ public class AccountingApplication {
         while(!(command == 'x')) {
             System.out.print(homeScreenMenu);
             command = scanner.next().charAt(0);
+            scanner.nextLine();
             switch (command) {
                 case 'D':
                     makeDeposit();
@@ -68,6 +69,7 @@ public class AccountingApplication {
         String vendor = scanner.nextLine();
         System.out.print("Enter amount: ");
         float amount = scanner.nextFloat();
+        scanner.nextLine();
         ledger.add(new Transactions(date, time, description, vendor, amount));
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("transactions.csv", true))) {
@@ -86,6 +88,7 @@ public class AccountingApplication {
         String vendor = scanner.nextLine();
         System.out.print("Enter amount: ");
         float amount = -scanner.nextFloat();
+        scanner.nextLine();
         ledger.add(new Transactions(date, time, description, vendor, amount));
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("transactions.csv", true))) {
@@ -108,6 +111,7 @@ public class AccountingApplication {
         while(!(command == 'H')) {
             System.out.print(ledgerScreenMenu);
             command = scanner.next().charAt(0);
+            scanner.nextLine();
             switch (command) {
                 case 'A':
                     ledger.sort(Comparator.comparing(Transactions::getDate).thenComparing(Transactions::getTime));
