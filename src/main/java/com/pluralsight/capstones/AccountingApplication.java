@@ -14,6 +14,7 @@ public class AccountingApplication {
     private static final ArrayList<Transactions> ledger = fillLedger();
 
     public static void main(String[] args) {
+        sortLedger();
         String homeScreenMenu = """
                 \nHome
                 D) Add Deposit
@@ -61,14 +62,17 @@ public class AccountingApplication {
         return ledger;
     }
 
+    // Sorts the transactions by date and time with newest entries first
+    public static void sortLedger() {
+        ledger.sort(Comparator.comparing(Transactions::getDate).thenComparing(Transactions::getTime).reversed());
+    }
+
     public static String askUserStr(String prompt){
         System.out.print(prompt);
         return scanner.nextLine();
     }
 
     public static void displayLedger(Predicate<Transactions> condition) {
-        // Sorts the transactions by date and time
-        ledger.sort(Comparator.comparing(Transactions::getDate).thenComparing(Transactions::getTime).reversed());
         for (Transactions t : ledger) {
             if (condition.test(t)) {
                 System.out.printf("%s|%s|%s|%s|%.2f\n",
@@ -86,6 +90,7 @@ public class AccountingApplication {
         float amount = (command == 'P') ? -scanner.nextFloat() : scanner.nextFloat();
         scanner.nextLine();
         ledger.add(new Transactions(date, time, description, vendor, amount));
+        sortLedger();
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("transactions.csv", true))) {
             writer.write(System.lineSeparator());
@@ -195,8 +200,6 @@ public class AccountingApplication {
                 .filter(e -> (description.isEmpty() || e.getDescription().contains(description)))
                 .filter(e -> (vendor.isEmpty() || e.getVendor().contains(vendor)))
                 .filter(e -> (amount == null || e.getAmount() == amount))
-                .sorted(Comparator.comparing(Transactions::getDate)
-                        .thenComparing(Transactions::getTime).reversed())
                 .collect(Collectors.toCollection(ArrayList::new));
 
         for (Transactions t : report) {
