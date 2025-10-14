@@ -27,10 +27,8 @@ public class AccountingApplication {
             scanner.nextLine();
             switch (command) {
                 case 'D':
-                    makeDeposit();
-                    break;
                 case 'P':
-                    makePayment();
+                    makeTransaction(command);
                     break;
                 case 'L':
                     ledgerScreen();
@@ -61,36 +59,18 @@ public class AccountingApplication {
         return ledger;
     }
 
-    public static void makeDeposit() {
+    public static void makeTransaction(char command){
         LocalDate date = LocalDate.now();
         LocalTime time = LocalTime.now().truncatedTo(ChronoUnit.SECONDS);
-        System.out.print("Enter description for deposit: ");
+        System.out.print("Enter description for transaction: ");
         String description = scanner.nextLine();
         System.out.print("Enter vendor name: ");
         String vendor = scanner.nextLine();
         System.out.print("Enter amount: ");
         float amount = scanner.nextFloat();
-        amount = Math.round(amount * 100) / 100.0f; // Formats amount to 2 decimal places
-        scanner.nextLine();
-        ledger.add(new Transactions(date, time, description, vendor, amount));
-
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("transactions.csv", true))) {
-            writer.write(String.format("\n%s|%s|%s|%s|%.2f", date, time.toString(), description, vendor, amount));
-        } catch (IOException e) {
-            System.out.println("failure writing to transactions");
+        if (command == 'P') {
+            amount = -amount;
         }
-    }
-
-    public static void makePayment(){
-        LocalDate date = LocalDate.now();
-        LocalTime time = LocalTime.now().truncatedTo(ChronoUnit.SECONDS);
-        System.out.print("Enter description for payment: ");
-        String description = scanner.nextLine();
-        System.out.print("Enter vendor name: ");
-        String vendor = scanner.nextLine();
-        System.out.print("Enter amount: ");
-        float amount = -scanner.nextFloat();
-        amount = Math.round(amount * 100) / 100.0f;
         scanner.nextLine();
         ledger.add(new Transactions(date, time, description, vendor, amount));
 
