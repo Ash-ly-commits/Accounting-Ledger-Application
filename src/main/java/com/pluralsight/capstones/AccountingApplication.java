@@ -83,10 +83,7 @@ public class AccountingApplication {
         String description = askUserStr("Enter description for transaction: ");
         String vendor = askUserStr("Enter vendor name: ");
         System.out.print("Enter amount: ");
-        float amount = scanner.nextFloat();
-        if (command == 'P') {
-            amount = -amount;
-        }
+        float amount = (command == 'P') ? -scanner.nextFloat() : scanner.nextFloat();
         scanner.nextLine();
         ledger.add(new Transactions(date, time, description, vendor, amount));
 
