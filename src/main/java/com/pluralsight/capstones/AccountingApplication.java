@@ -2,6 +2,7 @@ package com.pluralsight.capstones;
 import java.io.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Scanner;
@@ -42,7 +43,7 @@ public class AccountingApplication {
     public static ArrayList<Transactions> fillLedger(){
         ArrayList<Transactions> ledger = new ArrayList<>();
         try(BufferedReader reader = new BufferedReader(new FileReader("transactions.csv"))){
-            String input;
+            String input = reader.readLine(); // Eats the header
             while ((input = reader.readLine()) != null) {
                 String[] tokens = input.split("\\|");
                 LocalDate localDate = LocalDate.parse(tokens[0]);
@@ -60,7 +61,7 @@ public class AccountingApplication {
 
     public static void makeDeposit() {
         LocalDate date = LocalDate.now();
-        LocalTime time = LocalTime.now();
+        LocalTime time = LocalTime.now().truncatedTo(ChronoUnit.SECONDS);
         System.out.print("Enter description for deposit: ");
         String description = scanner.nextLine();
         System.out.print("Enter vendor name: ");
@@ -70,7 +71,7 @@ public class AccountingApplication {
         ledger.add(new Transactions(date, time, description, vendor, amount));
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("transactions.csv", true))) {
-            writer.write(date + "|" + time + "|" + description + "|" + vendor + "|" + amount);
+            writer.write("\n" + date + "|" + time + "|" + description + "|" + vendor + "|" + amount);
         } catch (IOException e) {
             System.out.println("failure writing to transactions");
         }
@@ -78,7 +79,7 @@ public class AccountingApplication {
 
     public static void makePayment(){
         LocalDate date = LocalDate.now();
-        LocalTime time = LocalTime.now();
+        LocalTime time = LocalTime.now().truncatedTo(ChronoUnit.SECONDS);
         System.out.print("Enter description for payment: ");
         String description = scanner.nextLine();
         System.out.print("Enter vendor name: ");
@@ -88,7 +89,7 @@ public class AccountingApplication {
         ledger.add(new Transactions(date, time, description, vendor, amount));
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("transactions.csv", true))) {
-            writer.write(date + "|" + time + "|" + description + "|" + vendor + "|" + amount);
+            writer.write("\n" + date + "|" + time + "|" + description + "|" + vendor + "|" + amount);
         } catch (IOException e) {
             System.out.println("failure writing to transactions");
         }
