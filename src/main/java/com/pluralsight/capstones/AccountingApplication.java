@@ -67,6 +67,7 @@ public class AccountingApplication {
     }
 
     public static void displayLedger(Predicate<Transactions> condition) {
+        // Sorts the transactions by date and time
         ledger.sort(Comparator.comparing(Transactions::getDate).thenComparing(Transactions::getTime));
         for (Transactions t : ledger) {
             if (condition.test(t)) {
@@ -168,8 +169,7 @@ public class AccountingApplication {
                     displayLedger(t -> t.getDate().getYear() == (current.getYear()-1));
                     break;
                 case 5:
-                    System.out.print("Enter the vendor name: ");
-                    String vendor = scanner.nextLine();
+                    String vendor = askUserStr("Enter the vendor name: ");
                     displayLedger(t -> vendor.equalsIgnoreCase(t.getVendor()));
                     break;
                 case 6:
