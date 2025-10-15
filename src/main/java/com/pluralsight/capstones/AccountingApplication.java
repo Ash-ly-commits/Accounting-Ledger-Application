@@ -22,23 +22,16 @@ public class AccountingApplication {
                 L) Ledger
                 X) Exit
                 Enter option:\t""";
-        char command = 'c';
-        while(!(command == 'x')) {
-            System.out.print(homeScreenMenu);
-            command = scanner.next().charAt(0);
-            command = Character.toUpperCase(command);
-            scanner.nextLine();
+        char command;
+        while (true) {
+            command = screenMenu(homeScreenMenu, "DPLX");
+            if (command == 'X') {
+                System.out.println("Exiting...");
+                break;
+            }
             switch (command) {
-                case 'D':
-                case 'P':
-                    makeTransaction(command);
-                    break;
-                case 'L':
-                    ledgerScreen();
-                    break;
-                case 'X':
-                    System.out.println("Exiting...");
-                    break;
+                case 'D', 'P' -> makeTransaction(command);
+                case 'L' -> ledgerScreen();
             }
         }
     }
@@ -65,6 +58,17 @@ public class AccountingApplication {
     // Sorts the transactions by date and time with newest entries first
     public static void sortLedger() {
         ledger.sort(Comparator.comparing(Transactions::getDate).thenComparing(Transactions::getTime).reversed());
+    }
+
+    // Displays menu screen and validates choice input
+    public static char screenMenu(String prompt, String validOptions) {
+        while (true) {
+            System.out.print(prompt);
+            char c = Character.toUpperCase(scanner.next().charAt(0));
+            scanner.nextLine();
+            if (validOptions.indexOf(c) >= 0) return c;
+            System.out.println("Invalid option, try again.");
+        }
     }
 
     public static String askUserStr(String prompt){
@@ -109,28 +113,17 @@ public class AccountingApplication {
                 R) Reports
                 H) Home
                 Enter option:\t""";
-        char command = 'c';
-        while(!(command == 'H')) {
-            System.out.print(ledgerScreenMenu);
-            command = scanner.next().charAt(0);
-            command = Character.toUpperCase(command);
-            scanner.nextLine();
+        while (true) {
+            char command = screenMenu(ledgerScreenMenu, "ADPRH");
             switch (command) {
-                case 'A':
-                    displayLedger(t -> true);
-                    break;
-                case 'D':
-                    displayLedger(t -> t.getAmount() > 0);
-                    break;
-                case 'P':
-                    displayLedger(t -> t.getAmount() < 0);
-                    break;
-                case 'R':
-                    reports();
-                    break;
-                case 'H':
-                    System.out.println("Back to Home...");
-                    break;
+                case 'H' -> {
+                    System.out.println("Break to home...");
+                    return;
+                }
+                case 'A' -> displayLedger(t -> true);
+                case 'D' -> displayLedger(t -> t.getAmount() > 0);
+                case 'P' -> displayLedger(t -> t.getAmount() < 0);
+                case 'R' -> reports();
             }
         }
     }
@@ -192,7 +185,6 @@ public class AccountingApplication {
         Float amount = amountStr.isEmpty() ? null : Float.parseFloat(amountStr);
         LocalDate start = startDate.isEmpty() ? null : LocalDate.parse(startDate);
         LocalDate end = endDate.isEmpty() ? null : LocalDate.parse(endDate);
-
         // Creates stream of Transaction objects that is filtered to user specifications
         ArrayList<Transactions> report = ledger.stream()
                 .filter(e -> (start == null || !e.getDate().isBefore(start)))
