@@ -2,10 +2,10 @@ package com.pluralsight.capstones;
 import java.io.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -65,6 +65,7 @@ public class AccountingApplication {
     public static String screenMenu(String prompt, String validOptions) {
         while (true) {
             String input = askUserStr(prompt);
+            if (input.isEmpty()) continue;
             String shortenedInput = input.toLowerCase().substring(0,1);
             if (validOptions.contains(shortenedInput)) return shortenedInput;
             System.out.println("Invalid option, try again.");
@@ -81,20 +82,6 @@ public class AccountingApplication {
         }
     }
 
-    public static double askUserDouble(String prompt){
-        while (true) {
-            try {
-                System.out.print(prompt);
-                double input = scanner.nextDouble();
-                scanner.nextLine();
-                return input;
-            } catch (InputMismatchException e) {
-                System.out.println("Invalid input. Please enter a number amount.");
-                scanner.next(); // Eat the invalid input to avoid an infinite loop
-            }
-        }
-    }
-
     public static void displayLedger(Predicate<Transactions> condition) {
         for (Transactions t : ledger) {
             if (condition.test(t)) {
@@ -104,19 +91,37 @@ public class AccountingApplication {
         }
     }
 
-    public static void makeTransaction(String option){
+    public static void makeTransaction(String option) {
         LocalDate date = LocalDate.now();
         LocalTime time = LocalTime.now().truncatedTo(ChronoUnit.SECONDS);
-        String description = askUserStr("Enter description for transaction: ");
-        String vendor = askUserStr("Enter vendor name: ");
-        double amount = askUserDouble("Enter amount: ");
-        amount = (option.equalsIgnoreCase("p")) ? -amount : amount;
+        double amount = 0;
+        String description;
+        do {
+            description = askUserStr("Enter description for transaction: ");
+            if (description.isEmpty()) System.out.println("Description cannot be blank.");
+        } while (description.isEmpty());
+        String vendor;
+        do {
+            vendor = askUserStr("Enter vendor name: ");
+            if (vendor.isEmpty()) System.out.println("Vendor cannot be blank.");
+        } while (vendor.isEmpty());
+        boolean validAmount = false;
+        while (!validAmount) {
+            String amtStr = askUserStr("Enter amount: ");
+            try {
+                amount = Double.parseDouble(amtStr);
+                validAmount = true;
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid amount. Please enter a valid number.");
+            }
+        }
+        if (option.equalsIgnoreCase("p")) amount = -amount;
         ledger.add(new Transactions(date, time, description, vendor, amount));
         sortLedger();
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("transactions.csv", true))) {
-            writer.write(System.lineSeparator());
-            writer.write(String.format("%s|%s|%s|%s|%.2f", date, time.toString(), description, vendor, amount));
+            writer.newLine();
+            writer.write(String.format("%s|%s|%s|%s|%.2f", date, time, description, vendor, amount));
         } catch (IOException e) {
             System.err.println("Error writing to file: " + e.getMessage());
         }
@@ -181,22 +186,54 @@ public class AccountingApplication {
 
     public static void customSearch(){
         System.out.println("\nCustom Search\nEnter only the values you want to filter by ->");
-        String startDate = askUserStr("Start Date (YYYY-MM-DD): ");
-        String endDate = askUserStr("End Date (YYYY-MM-DD): ");
+        LocalDate start = null;
+        LocalDate end = null;
         String description = askUserStr("Description: ");
         String vendor = askUserStr("Vendor: ");
-        String amountStr = askUserStr("Amount: ");
-
-        Double amount = amountStr.isEmpty() ? null : Double.parseDouble(amountStr);
-        LocalDate start = startDate.isEmpty() ? null : LocalDate.parse(startDate);
-        LocalDate end = endDate.isEmpty() ? null : LocalDate.parse(endDate);
+        // Start Date Validation
+        while (true) {
+            String startDateStr = askUserStr("Start Date (YYYY-MM-DD): ");
+            if (startDateStr.isEmpty()) break; // blank = skip filter
+            try {
+                start = LocalDate.parse(startDateStr);
+                break;
+            } catch (DateTimeParseException e) {
+                System.out.println("Invalid start date format. Please use YYYY-MM-DD or leave blank to skip.");
+            }
+        }
+        // End Date Validation
+        while (true) {
+            String endDateStr = askUserStr("End Date (YYYY-MM-DD): ");
+            if (endDateStr.isEmpty()) break;
+            try {
+                end = LocalDate.parse(endDateStr);
+                break;
+            } catch (DateTimeParseException e) {
+                System.out.println("Invalid end date format. Please use YYYY-MM-DD or leave blank to skip.");
+            }
+        }
+        // Amount validation
+        Double amount = null;
+        while (true) {
+            String amountStr = askUserStr("Amount: ");
+            if (amountStr.isEmpty()) break;
+            try {
+                amount = Double.parseDouble(amountStr);
+                break;
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid amount. Please enter a number or leave blank to skip.");
+            }
+        }
         // Creates stream of Transaction objects that is filtered to user specifications
+        Double finalAmount = amount;
+        LocalDate finalStart = start;
+        LocalDate finalEnd = end;
         ArrayList<Transactions> report = ledger.stream()
-                .filter(e -> (start == null || !e.getDate().isBefore(start)))
-                .filter(e -> (end == null || !e.getDate().isAfter(end)))
+                .filter(e -> (finalStart == null || !e.getDate().isBefore(finalStart)))
+                .filter(e -> (finalEnd == null || !e.getDate().isAfter(finalEnd)))
                 .filter(e -> (description.isEmpty() || e.getDescription().contains(description)))
                 .filter(e -> (vendor.isEmpty() || e.getVendor().contains(vendor)))
-                .filter(e -> (amount == null || e.getAmount() == amount))
+                .filter(e -> (finalAmount == null || e.getAmount() == finalAmount))
                 .collect(Collectors.toCollection(ArrayList::new));
 
         for (Transactions t : report) {
