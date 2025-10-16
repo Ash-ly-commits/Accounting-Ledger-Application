@@ -5,6 +5,7 @@ import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -22,16 +23,16 @@ public class AccountingApplication {
                 L) Ledger
                 X) Exit
                 Enter option:\t""";
-        char command;
+        String option;
         while (true) {
-            command = screenMenu(homeScreenMenu, "DPLX");
-            if (command == 'X') {
+            option = screenMenu(homeScreenMenu, "dplx");
+            if (option.equalsIgnoreCase("x")) {
                 System.out.println("Exiting...");
                 break;
             }
-            switch (command) {
-                case 'D', 'P' -> makeTransaction(command);
-                case 'L' -> ledgerScreen();
+            switch (option) {
+                case "d", "p" -> makeTransaction(option);
+                case "l" -> ledgerScreen();
             }
         }
     }
@@ -46,7 +47,7 @@ public class AccountingApplication {
                 LocalTime localTime = LocalTime.parse(tokens[1]);
                 String description = tokens[2];
                 String vendor = tokens[3];
-                float amount = Float.parseFloat(tokens[4]);
+                double amount = Double.parseDouble(tokens[4]);
                 ledger.add(new Transactions(localDate, localTime, description, vendor, amount));
             }
         } catch (IOException e) {
@@ -61,19 +62,37 @@ public class AccountingApplication {
     }
 
     // Displays menu screen and validates choice input
-    public static char screenMenu(String prompt, String validOptions) {
+    public static String screenMenu(String prompt, String validOptions) {
         while (true) {
-            System.out.print(prompt);
-            char c = Character.toUpperCase(scanner.next().charAt(0));
-            scanner.nextLine();
-            if (validOptions.indexOf(c) >= 0) return c;
+            String input = askUserStr(prompt);
+            String shortenedInput = input.toLowerCase().substring(0,1);
+            if (validOptions.contains(shortenedInput)) return shortenedInput;
             System.out.println("Invalid option, try again.");
         }
     }
 
     public static String askUserStr(String prompt){
-        System.out.print(prompt);
-        return scanner.nextLine();
+        try{
+            System.out.print(prompt);
+            return scanner.nextLine().trim();
+        } catch (Exception e) {
+            System.out.println("Error with scanner.");
+            return " ";
+        }
+    }
+
+    public static double askUserDouble(String prompt){
+        while (true) {
+            try {
+                System.out.print(prompt);
+                double input = scanner.nextDouble();
+                scanner.nextLine();
+                return input;
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter a number amount.");
+                scanner.next(); // Eat the invalid input to avoid an infinite loop
+            }
+        }
     }
 
     public static void displayLedger(Predicate<Transactions> condition) {
@@ -85,14 +104,13 @@ public class AccountingApplication {
         }
     }
 
-    public static void makeTransaction(char command){
+    public static void makeTransaction(String option){
         LocalDate date = LocalDate.now();
         LocalTime time = LocalTime.now().truncatedTo(ChronoUnit.SECONDS);
         String description = askUserStr("Enter description for transaction: ");
         String vendor = askUserStr("Enter vendor name: ");
-        System.out.print("Enter amount: ");
-        float amount = (command == 'P') ? -scanner.nextFloat() : scanner.nextFloat();
-        scanner.nextLine();
+        double amount = askUserDouble("Enter amount: ");
+        amount = (option.equalsIgnoreCase("p")) ? -amount : amount;
         ledger.add(new Transactions(date, time, description, vendor, amount));
         sortLedger();
 
@@ -114,16 +132,16 @@ public class AccountingApplication {
                 H) Home
                 Enter option:\t""";
         while (true) {
-            char command = screenMenu(ledgerScreenMenu, "ADPRH");
-            switch (command) {
-                case 'H' -> {
-                    System.out.println("Break to home...");
-                    return;
-                }
-                case 'A' -> displayLedger(t -> true);
-                case 'D' -> displayLedger(t -> t.getAmount() > 0);
-                case 'P' -> displayLedger(t -> t.getAmount() < 0);
-                case 'R' -> reports();
+            String option = screenMenu(ledgerScreenMenu, "adprh");
+            if (option.equalsIgnoreCase("h")) {
+                System.out.println("Back to Home...");
+                return;
+            }
+            switch (option) {
+                case "a" -> displayLedger(t -> true);
+                case "d" -> displayLedger(t -> t.getAmount() > 0);
+                case "p" -> displayLedger(t -> t.getAmount() < 0);
+                case "r" -> reports();
             }
         }
     }
@@ -139,37 +157,24 @@ public class AccountingApplication {
                 6) Custom Search
                 0) Back
                 Enter option:\t""";
-        int command = 6;
-        while(!(command == 0)) {
-            System.out.print(reportsScreenMenu);
-            command = scanner.nextInt();
-            scanner.nextLine();
+        while (true) {
             LocalDate current = LocalDate.now();
-            switch (command) {
-                case 1:
-                    displayLedger(t -> (t.getDate().getMonthValue() == current.getMonthValue()) &&
-                            (t.getDate().getYear() == current.getYear()));
-                    break;
-                case 2:
-                    displayLedger(t -> (t.getDate().getMonthValue() == (current.getMonthValue()-1)) &&
-                            (t.getDate().getYear() == current.getYear()));
-                    break;
-                case 3:
-                    displayLedger(t -> t.getDate().getYear() == current.getYear());
-                    break;
-                case 4:
-                    displayLedger(t -> t.getDate().getYear() == (current.getYear()-1));
-                    break;
-                case 5:
-                    String vendor = askUserStr("Enter the vendor name: ");
-                    displayLedger(t -> vendor.equalsIgnoreCase(t.getVendor()));
-                    break;
-                case 6:
-                    customSearch();
-                    break;
-                case 0:
-                    System.out.println("Back to Ledger...");
-                    break;
+            String option = screenMenu(reportsScreenMenu, "0123456");
+            if (option.equalsIgnoreCase("0")) {
+                System.out.println("Back to Ledger...");
+                return;
+            } else if (option.equalsIgnoreCase("5")) {
+                String vendor = askUserStr("Enter the vendor name: ");
+                displayLedger(t -> vendor.equalsIgnoreCase(t.getVendor()));
+            }
+            switch (option) {
+                case "1" -> displayLedger(t -> (t.getDate().getMonthValue() == current.getMonthValue()) &&
+                        (t.getDate().getYear() == current.getYear()));
+                case "2" -> displayLedger(t -> (t.getDate().getMonthValue() == (current.getMonthValue()-1)) &&
+                        (t.getDate().getYear() == current.getYear()));
+                case "3" -> displayLedger(t -> t.getDate().getYear() == current.getYear());
+                case "4" -> displayLedger(t -> t.getDate().getYear() == (current.getYear()-1));
+                case "6" -> customSearch();
             }
         }
     }
@@ -182,7 +187,7 @@ public class AccountingApplication {
         String vendor = askUserStr("Vendor: ");
         String amountStr = askUserStr("Amount: ");
 
-        Float amount = amountStr.isEmpty() ? null : Float.parseFloat(amountStr);
+        Double amount = amountStr.isEmpty() ? null : Double.parseDouble(amountStr);
         LocalDate start = startDate.isEmpty() ? null : LocalDate.parse(startDate);
         LocalDate end = endDate.isEmpty() ? null : LocalDate.parse(endDate);
         // Creates stream of Transaction objects that is filtered to user specifications

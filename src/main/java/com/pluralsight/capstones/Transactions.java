@@ -8,9 +8,9 @@ public class Transactions {
     private final LocalTime time;
     private final String description;
     private final String vendor;
-    private final float amount;
+    private final double amount;
 
-    public Transactions(LocalDate date, LocalTime time, String description, String vendor, float amount) {
+    public Transactions(LocalDate date, LocalTime time, String description, String vendor, double amount) {
         this.date = date;
         this.time = time;
         this.description = description;
@@ -34,7 +34,7 @@ public class Transactions {
         return vendor;
     }
 
-    public float getAmount() {
+    public double getAmount() {
         return amount;
     }
 }
