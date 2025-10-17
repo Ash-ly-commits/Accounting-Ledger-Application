@@ -197,19 +197,52 @@ public class AccountingApplicationGUI extends Application {
         screenContainer.setCenter(root);
     }
 
-    public void reportsScreen(){
-//  border pane root
-//  top HBox of buttons below:
-//  Ledger button top left -> setaction ledgerScreen()
-//  Search by Vendor button top middle -> setaction vendorScreen()
-//  Custom Search button top right -> setaction customSearchScreen()
-//  display text area center
-//  bottom HBox of buttons below:
-//  Display Month to date button -> setaction displayLedger(text area box thing, predicate)
-//  Display Previous month button -> setaction displayLedger(text area box thing, predicate)
-//  Display Month to year button -> setaction displayLedger(text area box thing, predicate)
-//  Display Month to year button -> setaction displayLedger(text area box thing, predicate)
-//  Display Previous year button -> setaction displayLedger(text area box thing, predicate)
+    // Outputs reports screen to display filtered transactions
+    public void reportsScreen() {
+        BorderPane root = createScreen("REPORTS");
+
+        Button backBtn = createButton("Back");
+        Button customSearchBtn = createButton("Custom Search");
+
+        HBox topBox = new HBox(backBtn, new Region(), customSearchBtn);
+        HBox.setHgrow(topBox.getChildren().get(1), Priority.ALWAYS);
+        topBox.setPadding(new Insets(10));
+        root.setTop(topBox);
+
+        TextArea reportArea = new TextArea();
+        reportArea.setEditable(false);
+        reportArea.getStyleClass().add("textarea");
+        reportArea.setFont(Font.font("Monospaced", 14));
+        root.setCenter(reportArea);
+
+        Button mtdBtn = createButton("Month-to-Date");
+        Button prevMonthBtn = createButton("Previous Month");
+        Button ytdBtn = createButton("Year-to-Date");
+        Button prevYearBtn = createButton("Previous Year");
+        Button vendorBtn = createButton("Vendor Search");
+
+        HBox bottomBox = new HBox(10, mtdBtn, prevMonthBtn, ytdBtn, prevYearBtn, vendorBtn);
+        bottomBox.setAlignment(Pos.CENTER);
+        bottomBox.setPadding(new Insets(10));
+        root.setBottom(bottomBox);
+
+        mtdBtn.setOnAction(e -> displayLedger(reportArea, AccountingApplication.monthToDate()));
+        prevMonthBtn.setOnAction(e -> displayLedger(reportArea, AccountingApplication.previousMonth()));
+        ytdBtn.setOnAction(e -> displayLedger(reportArea, AccountingApplication.yearToDate()));
+        prevYearBtn.setOnAction(e -> displayLedger(reportArea, AccountingApplication.previousYear()));
+        vendorBtn.setOnAction(e -> {
+            TextInputDialog dialog = new TextInputDialog();
+            dialog.setTitle("Search by Vendor");
+            dialog.setHeaderText("Enter Vendor Name");
+            dialog.setContentText("Vendor:");
+            dialog.getDialogPane().getStylesheets().add(getClass().getResource("/retro.css").toExternalForm());
+            dialog.showAndWait().ifPresent(v -> displayLedger(reportArea, AccountingApplication.filterByVendor(v)));
+        });
+
+        backBtn.setOnAction(e -> ledgerScreen());
+        customSearchBtn.setOnAction(e -> customSearchScreen());
+
+        screenContainer.setCenter(root);
     }
 
     public void vendorScreen(){
