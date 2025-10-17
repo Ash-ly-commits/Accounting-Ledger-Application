@@ -1,40 +1,40 @@
 date|time|description|vendor|amount
-2024-04-01|08:30:12|office furniture purchase|IKEA|-450.75
-2024-07-03|14:05:47|client invoice #2402 paid|Summit Consulting|1800.00
-2024-07-12|09:50:29|internet service monthly fee|Comcast|-120.00
-2024-07-23|16:22:10|client invoice #2403 paid|BlueWave Media|2250.00
-2024-08-12|10:15:33|printer ink cartridges|OfficeDepot|-89.99
-2024-08-15|13:40:56|software license renewal|Microsoft|-299.99
-2024-08-18|11:05:42|client invoice #2404 paid|TechSolutions|3400.00
-2024-09-09|15:30:18|office cleaning service|SparkleClean|-250.00
-2024-09-22|09:45:50|client invoice #2405 paid|GreenLeaf Co.|1500.00
-2024-09-27|12:10:05|team holiday lunch|Local Bistro|-325.50
-2024-10-10|09:25:14|office supplies order|Staples|-123.45
-2024-10-22|13:40:59|client invoice #2401 paid|Apex Media|2750.00
-2024-11-05|11:18:33|monthly software subscription|Adobe|-54.99
-2024-11-18|10:45:22|client retainer payment|BrightPath Inc|3200.00
-2024-12-03|08:55:07|printer toner cartridges|Best Buy|-89.10
-2024-12-15|14:12:48|client invoice #2408 paid|Summit Tech|1950.00
-2025-01-07|09:33:00|office rent payment|Downtown Properties|-1250.00
-2025-01-18|10:10:15|payment received for project Alpha|TechNova LLC|2800.00
-2025-02-04|16:25:49|business lunch with client|Olive Garden|-67.80
-2025-02-20|09:05:10|web hosting renewal|Bluehost|-24.99
-2025-03-12|11:47:29|client invoice #2422 paid|NorthPoint Media|3100.00
-2025-03-28|15:30:54|team building event|TopGolf|-340.00
-2025-04-09|10:20:05|domain renewal (2 years)|Namecheap|-28.99
-2025-04-22|13:14:42|client payment for design contract|Omega Solutions|2600.00
-2025-05-10|09:18:27|internet bill|Comcast|-79.99
-2025-05-25|11:55:33|advertising campaign|Google Ads|-250.00
-2025-06-06|14:45:21|client invoice #2440 paid|Zenith Digital|3300.00
-2025-07-02|10:08:16|coffee for office|Starbucks|-34.20
-2025-08-15|09:30:00|monthly insurance premium|Progressive|-310.00
-2025-09-15|09:50:01|client invoice #2502 paid|Summit Consulting|1800.00
-2025-09-18|13:15:42|internet service monthly fee|Comcast|-120.00
-2025-09-20|15:05:33|client invoice #2503 paid|BlueWave Media|2250.00
-2025-09-23|10:30:55|team lunch|Local Bistro|-145.75
-2025-09-27|12:12:44|client payment for annual contract|Nova Systems|4200.00
-2025-10-01|08:45:12|client invoice #2504 paid|TechSolutions|3400.00
-2025-10-03|09:20:47|office desk purchase|IKEA|-350.75
-2025-10-05|11:10:33|monthly software subscription|Microsoft|-299.99
-2025-10-07|14:05:55|client invoice #2505 paid|GreenLeaf Co.|1500.00
-2025-10-09|10:50:22|printer ink cartridges|OfficeDepot|-89.99
+2024-04-01|08:30:12|office furniture purchase|ikea|-450.75
+2024-07-03|14:05:47|client invoice #2402 paid|summit consulting|1800.00
+2024-07-12|09:50:29|internet service monthly fee|comcast|-120.00
+2024-07-23|16:22:10|client invoice #2403 paid|bluewave media|2250.00
+2024-08-12|10:15:33|printer ink cartridges|officedepot|-89.99
+2024-08-15|13:40:56|software license renewal|microsoft|-299.99
+2024-08-18|11:05:42|client invoice #2404 paid|techsolutions|3400.00
+2024-09-09|15:30:18|office cleaning service|sparkleclean|-250.00
+2024-09-22|09:45:50|client invoice #2405 paid|greenleaf co.|1500.00
+2024-09-27|12:10:05|team holiday lunch|local bistro|-325.50
+2024-10-10|09:25:14|office supplies order|staples|-123.45
+2024-10-22|13:40:59|client invoice #2401 paid|apex media|2750.00
+2024-11-05|11:18:33|monthly software subscription|adobe|-54.99
+2024-11-18|10:45:22|client retainer payment|brightpath inc|3200.00
+2024-12-03|08:55:07|printer toner cartridges|best buy|-89.10
+2024-12-15|14:12:48|client invoice #2408 paid|summit tech|1950.00
+2025-01-07|09:33:00|office rent payment|downtown properties|-1250.00
+2025-01-18|10:10:15|payment received for project alpha|technova llc|2800.00
+2025-02-04|16:25:49|business lunch with client|olive garden|-67.80
+2025-02-20|09:05:10|web hosting renewal|bluehost|-24.99
+2025-03-12|11:47:29|client invoice #2422 paid|northpoint media|3100.00
+2025-03-28|15:30:54|team building event|topgolf|-340.00
+2025-04-09|10:20:05|domain renewal (2 years)|namecheap|-28.99
+2025-04-22|13:14:42|client payment for design contract|omega solutions|2600.00
+2025-05-10|09:18:27|internet bill|comcast|-79.99
+2025-05-25|11:55:33|advertising campaign|google ads|-250.00
+2025-06-06|14:45:21|client invoice #2440 paid|zenith digital|3300.00
+2025-07-02|10:08:16|coffee for office|starbucks|-34.20
+2025-08-15|09:30:00|monthly insurance premium|progressive|-310.00
+2025-09-15|09:50:01|client invoice #2502 paid|summit consulting|1800.00
+2025-09-18|13:15:42|internet service monthly fee|comcast|-120.00
+2025-09-20|15:05:33|client invoice #2503 paid|bluewave media|2250.00
+2025-09-23|10:30:55|team lunch|local bistro|-145.75
+2025-09-27|12:12:44|client payment for annual contract|nova systems|4200.00
+2025-10-01|08:45:12|client invoice #2504 paid|techsolutions|3400.00
+2025-10-03|09:20:47|office desk purchase|ikea|-350.75
+2025-10-05|11:10:33|monthly software subscription|microsoft|-299.99
+2025-10-07|14:05:55|client invoice #2505 paid|greenleaf co.|1500.00
+2025-10-09|10:50:22|printer ink cartridges|officedepot|-89.99
