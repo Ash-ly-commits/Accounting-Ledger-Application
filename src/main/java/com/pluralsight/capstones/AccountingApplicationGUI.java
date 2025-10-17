@@ -256,23 +256,71 @@ public class AccountingApplicationGUI extends Application {
 //  submit button bottom right -> setaction try{ getText from field & displayLedger(text area box, predicate)
     }
 
-    public void customSearchScreen(){
-//  border pane root
-//  top Hbox with stuff below:
-//  Reports button left -> setaction reportsScreen()
-//  "Custom Search" label middle
+    // Outputs custom search screen to allow user to be more specific with what they filter from transactions
+    public void customSearchScreen() {
+        BorderPane root = new BorderPane();
 
-//  Center Vbox maybe:
-//  setText("Enter only the values you want to filter by") top
-//  start date label on left, text field on right for response
-//  end date label on left, text field on right for response
-//  description label on left, text field on right for response
-//  vendor label on left, text field on right for response
-//  amount label on left, text field on right for response
-//  submit button -> setaction try{ getText from fields & customSearch(text area box, start, end, description,
-//  vendor, amount) } catch (Exception e) {showAlert() }
+        Button backBtn = createButton("Back");
+        backBtn.setOnAction(e -> reportsScreen());
+        HBox topBox = new HBox(backBtn);
+        topBox.setPadding(new Insets(10));
+        topBox.setAlignment(Pos.TOP_LEFT);
+        root.setTop(topBox);
 
-//  bottom text area box
+        VBox centerBox = new VBox(15);
+        centerBox.setPadding(new Insets(20));
+        Label instruction = new Label("Enter only the values you want to filter by.");
+        instruction.setFont(Font.font("Sevastopol", FontWeight.BOLD, 18));
+        instruction.setTextFill(Color.CYAN);
+        centerBox.getChildren().add(instruction);
+
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+
+        TextField startField = createTextField("YYYY-MM-DD");
+        TextField endField = createTextField("YYYY-MM-DD");
+        TextField descField = createTextField("Description");
+        TextField vendorField = createTextField("Vendor");
+        TextField amountField = createTextField("Amount");
+
+        grid.addRow(0, new Label("Start Date:"), startField);
+        grid.addRow(1, new Label("End Date:"), endField);
+        grid.addRow(2, new Label("Description:"), descField);
+        grid.addRow(3, new Label("Vendor:"), vendorField);
+        grid.addRow(4, new Label("Amount:"), amountField);
+
+        centerBox.getChildren().add(grid);
+
+        Button submitBtn = createButton("Submit");
+        TextArea ledgerTextArea = new TextArea();
+        ledgerTextArea.setEditable(false);
+        ledgerTextArea.getStyleClass().add("textarea");
+        ledgerTextArea.setPrefHeight(200);
+
+        submitBtn.setOnAction(e -> {
+            try {
+                LocalDate start = startField.getText().isEmpty() ? null : LocalDate.parse(startField.getText());
+                LocalDate end = endField.getText().isEmpty() ? null : LocalDate.parse(endField.getText());
+                String description = descField.getText();
+                String vendor = vendorField.getText();
+                Double amount = amountField.getText().isEmpty() ? null : Double.parseDouble(amountField.getText());
+
+                ArrayList<Transactions> report = AccountingApplication.customSearch(start, end, description, vendor, amount);
+                displayLedger(ledgerTextArea, report);
+            } catch (Exception ex) {
+                showAlert("Search Error", "Invalid input: " + ex.getMessage());
+            }
+        });
+
+        VBox bottomBox = new VBox(10, submitBtn, ledgerTextArea);
+        bottomBox.setAlignment(Pos.CENTER);
+        bottomBox.setPadding(new Insets(20));
+
+        root.setCenter(centerBox);
+        root.setBottom(bottomBox);
+
+        screenContainer.setCenter(root);
     }
 
 }
