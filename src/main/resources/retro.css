@@ -1,0 +1,45 @@
+.root {
+    -fx-background-color: linear-gradient(to bottom, #0f0f1e, #050510);
+}
+
+.label {
+    -fx-font-family: 'Sevastopol','Helvetica';
+    -fx-text-fill: #07d7e6;
+}
+
+.button{
+    -fx-font-family: 'Sevastopol','Helvetica';
+    -fx-font-size: 15px;
+    -fx-background-color: transparent;
+    -fx-border-color: #f0cd35;
+    -fx-border-width: 1px;
+    -fx-text-fill: #f0cd35;
+    -fx-effect: dropshadow(gaussian, #f0b535, 5, 0.5, 0, 0);
+    -fx-padding: 5 15;
+}
+
+.button:hover{
+    -fx-background-color: rgba(252, 214, 112, 1);
+    -fx-cursor: default;
+}
+
+.field{
+    -fx-font-family: 'Sevastopol','Helvetica';
+    -fx-font-size: 15px;
+    -fx-background-color: transparent;
+    -fx-border-color: #f0cd35;
+    -fx-border-width: 1px;
+    -fx-text-fill: #f0cd35;
+    -fx-effect: dropshadow(gaussian, #f0b535, 5, 0.5, 0, 0);
+    -fx-padding: 5 15;
+    -fx-prompt-text-fill: #e0c54c;
+}
+
+.textarea{
+    -fx-font-family: 'Roboto Mono','Courier New';
+    -fx-font-size: 15px;
+    -fx-background-color: transparent;
+    -fx-border-color: #f0cd35;
+    -fx-border-width: 1px;
+    -fx-text-fill: #f0cd35;
+}
