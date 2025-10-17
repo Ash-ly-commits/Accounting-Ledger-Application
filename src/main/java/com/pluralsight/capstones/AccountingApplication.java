@@ -1,4 +1,5 @@
 package com.pluralsight.capstones;
+
 import java.io.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -14,6 +15,7 @@ public class AccountingApplication {
     private static final Scanner scanner = new Scanner(System.in);
     private static final ArrayList<Transactions> ledger = fillLedger();
 
+    // Displays home screen menu
     public static void main(String[] args) {
         sortLedger();
         String homeScreenMenu = """
@@ -25,7 +27,7 @@ public class AccountingApplication {
                 Enter option:\t""";
         String option;
         while (true) {
-            option = screenMenu(homeScreenMenu, "dplx");
+            option = screenMenuValidation(homeScreenMenu, "dplx");
             if (option.equalsIgnoreCase("x")) {
                 System.out.println("Exiting...");
                 break;
@@ -37,9 +39,10 @@ public class AccountingApplication {
         }
     }
 
-    public static ArrayList<Transactions> fillLedger(){
+    // Fills ledger with values from the file
+    public static ArrayList<Transactions> fillLedger() {
         ArrayList<Transactions> ledger = new ArrayList<>();
-        try(BufferedReader reader = new BufferedReader(new FileReader("transactions.csv"))){
+        try (BufferedReader reader = new BufferedReader(new FileReader("transactions.csv"))) {
             String input = reader.readLine(); // Eats the header
             while ((input = reader.readLine()) != null) {
                 String[] tokens = input.split("\\|");
@@ -61,19 +64,28 @@ public class AccountingApplication {
         ledger.sort(Comparator.comparing(Transactions::getDate).thenComparing(Transactions::getTime).reversed());
     }
 
-    // Displays menu screen and validates choice input
-    public static String screenMenu(String prompt, String validOptions) {
+    // Displays every object in the ledger
+    public static void displayLedger(Predicate<Transactions> condition) {
+        ledger.stream()
+                .filter(condition)
+                .forEach(t -> System.out.printf("%s|%s|%s|%s|%.2f%n",
+                        t.getDate(), t.getTime(), t.getDescription(), t.getVendor(), t.getAmount()));
+    }
+
+    // Displays screen menu and validates choice input
+    public static String screenMenuValidation(String prompt, String validOptions) {
         while (true) {
             String input = askUserStr(prompt);
             if (input.isEmpty()) continue;
-            String shortenedInput = input.toLowerCase().substring(0,1);
-            if (validOptions.contains(shortenedInput)) return shortenedInput;
+            String choice = String.valueOf(input.charAt(0));
+            if (validOptions.contains(choice)) return choice;
             System.out.println("Invalid option, try again.");
         }
     }
 
-    public static String askUserStr(String prompt){
-        try{
+    // Method to output and input strings for user
+    public static String askUserStr(String prompt) {
+        try {
             System.out.print(prompt);
             return scanner.nextLine().trim();
         } catch (Exception e) {
@@ -82,35 +94,26 @@ public class AccountingApplication {
         }
     }
 
-    public static void displayLedger(Predicate<Transactions> condition) {
-        for (Transactions t : ledger) {
-            if (condition.test(t)) {
-                System.out.printf("%s|%s|%s|%s|%.2f\n",
-                        t.getDate(), t.getTime(), t.getDescription(), t.getVendor(), t.getAmount());
-            }
-        }
-    }
-
+    // Method to make deposits or payments and write them to the file
     public static void makeTransaction(String option) {
         LocalDate date = LocalDate.now();
         LocalTime time = LocalTime.now().truncatedTo(ChronoUnit.SECONDS);
-        double amount = 0;
-        String description;
-        do {
+        String description = "";
+        while (description.isEmpty()) {
             description = askUserStr("Enter description for transaction: ");
             if (description.isEmpty()) System.out.println("Description cannot be blank.");
-        } while (description.isEmpty());
-        String vendor;
-        do {
+        }
+        String vendor = "";
+        while (vendor.isEmpty()) {
             vendor = askUserStr("Enter vendor name: ");
             if (vendor.isEmpty()) System.out.println("Vendor cannot be blank.");
-        } while (vendor.isEmpty());
-        boolean validAmount = false;
-        while (!validAmount) {
+        }
+        double amount;
+        while (true) {
             String amtStr = askUserStr("Enter amount: ");
             try {
                 amount = Double.parseDouble(amtStr);
-                validAmount = true;
+                break;
             } catch (NumberFormatException e) {
                 System.out.println("Invalid amount. Please enter a valid number.");
             }
@@ -127,7 +130,8 @@ public class AccountingApplication {
         }
     }
 
-    public static void ledgerScreen(){
+    // Method to display ledger screen
+    public static void ledgerScreen() {
         String ledgerScreenMenu = """
                 \nLedger Display
                 A) All
@@ -137,7 +141,7 @@ public class AccountingApplication {
                 H) Home
                 Enter option:\t""";
         while (true) {
-            String option = screenMenu(ledgerScreenMenu, "adprh");
+            String option = screenMenuValidation(ledgerScreenMenu, "adprh");
             if (option.equalsIgnoreCase("h")) {
                 System.out.println("Back to Home...");
                 return;
@@ -146,12 +150,13 @@ public class AccountingApplication {
                 case "a" -> displayLedger(t -> true);
                 case "d" -> displayLedger(t -> t.getAmount() > 0);
                 case "p" -> displayLedger(t -> t.getAmount() < 0);
-                case "r" -> reports();
+                case "r" -> reportsScreen();
             }
         }
     }
 
-    public static void reports(){
+    // Method to display reports screen
+    public static void reportsScreen() {
         String reportsScreenMenu = """
                 \nReports Display
                 1) Month To Date
@@ -164,7 +169,7 @@ public class AccountingApplication {
                 Enter option:\t""";
         while (true) {
             LocalDate current = LocalDate.now();
-            String option = screenMenu(reportsScreenMenu, "0123456");
+            String option = screenMenuValidation(reportsScreenMenu, "0123456");
             if (option.equalsIgnoreCase("0")) {
                 System.out.println("Back to Ledger...");
                 return;
@@ -175,22 +180,23 @@ public class AccountingApplication {
             switch (option) {
                 case "1" -> displayLedger(t -> (t.getDate().getMonthValue() == current.getMonthValue()) &&
                         (t.getDate().getYear() == current.getYear()));
-                case "2" -> displayLedger(t -> (t.getDate().getMonthValue() == (current.getMonthValue()-1)) &&
+                case "2" -> displayLedger(t -> (t.getDate().getMonthValue() == (current.getMonthValue() - 1)) &&
                         (t.getDate().getYear() == current.getYear()));
                 case "3" -> displayLedger(t -> t.getDate().getYear() == current.getYear());
-                case "4" -> displayLedger(t -> t.getDate().getYear() == (current.getYear()-1));
+                case "4" -> displayLedger(t -> t.getDate().getYear() == (current.getYear() - 1));
                 case "6" -> customSearch();
             }
         }
     }
 
-    public static void customSearch(){
+    // Method to customize search and display it
+    public static void customSearch() {
         System.out.println("\nCustom Search\nEnter only the values you want to filter by ->");
         LocalDate start = null;
         LocalDate end = null;
         String description = askUserStr("Description: ");
         String vendor = askUserStr("Vendor: ");
-        // Start Date Validation
+        // Validates start date
         while (true) {
             String startDateStr = askUserStr("Start Date (YYYY-MM-DD): ");
             if (startDateStr.isEmpty()) break; // blank = skip filter
@@ -201,7 +207,7 @@ public class AccountingApplication {
                 System.out.println("Invalid start date format. Please use YYYY-MM-DD or leave blank to skip.");
             }
         }
-        // End Date Validation
+        // Validates end date
         while (true) {
             String endDateStr = askUserStr("End Date (YYYY-MM-DD): ");
             if (endDateStr.isEmpty()) break;
@@ -212,7 +218,7 @@ public class AccountingApplication {
                 System.out.println("Invalid end date format. Please use YYYY-MM-DD or leave blank to skip.");
             }
         }
-        // Amount validation
+        // Validates amount
         Double amount = null;
         while (true) {
             String amountStr = askUserStr("Amount: ");
@@ -235,10 +241,10 @@ public class AccountingApplication {
                 .filter(e -> (vendor.isEmpty() || e.getVendor().contains(vendor)))
                 .filter(e -> (finalAmount == null || e.getAmount() == finalAmount))
                 .collect(Collectors.toCollection(ArrayList::new));
-
+        // Displays stream
         for (Transactions t : report) {
-            System.out.printf("%s|%s|%s|%s|%.2f\n",t.getDate().toString(),t.getTime().toString(),
-                    t.getDescription(),t.getVendor(),t.getAmount());
+            System.out.printf("%s|%s|%s|%s|%.2f\n", t.getDate().toString(), t.getTime().toString(),
+                    t.getDescription(), t.getVendor(), t.getAmount());
         }
     }
 }

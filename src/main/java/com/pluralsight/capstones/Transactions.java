@@ -10,6 +10,7 @@ public class Transactions {
     private final String vendor;
     private final double amount;
 
+    // Parameterized constructor to fill Transaction object
     public Transactions(LocalDate date, LocalTime time, String description, String vendor, double amount) {
         this.date = date;
         this.time = time;
@@ -18,6 +19,7 @@ public class Transactions {
         this.amount = amount;
     }
 
+    // Getters (accessors) of Transactions' members
     public LocalDate getDate() {
         return date;
     }
