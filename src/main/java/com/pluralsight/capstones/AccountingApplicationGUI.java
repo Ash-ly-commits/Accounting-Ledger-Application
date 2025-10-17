@@ -3,9 +3,11 @@ package com.pluralsight.capstones;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -20,6 +22,19 @@ public class AccountingApplicationGUI extends Application {
 
     public static void main(String[] args) {
         launch();
+    }
+
+    @Override
+    public void start(Stage primaryStage) {
+        AccountingApplication.sortLedger();
+        screenContainer = new BorderPane();
+        Scene scene = new Scene(screenContainer, 900, 600);
+        scene.getStylesheets().add(getClass().getResource("/retro.css").toExternalForm());
+        homeScreen();
+
+        primaryStage.setScene(scene);
+        primaryStage.setTitle("Accounting Application");
+        primaryStage.show();
     }
 
     private BorderPane createScreen(String headerTitle){
@@ -66,12 +81,24 @@ public class AccountingApplicationGUI extends Application {
         area.setText(sb.toString());
     }
 
-    public void homeScreen(){
-//  border plan root
-//  deposit button -> setaction makeTransactionScreen("d")
-//  payment button -> setaction makeTransactionScreen("p")
-//  ledger button -> setaction ledgerScreen()
-//  exit button -> setaction system exit
+    // Outputs Home Screen menu
+    public void homeScreen() {
+        BorderPane root = createScreen("HOME");
+
+        Button depositBtn = createButton("Deposit");
+        Button paymentBtn = createButton("Payment");
+        Button ledgerBtn = createButton("Ledger");
+        Button exitBtn = createButton("Exit");
+
+        depositBtn.setOnAction(e -> makeTransactionScreen("D"));
+        paymentBtn.setOnAction(e -> makeTransactionScreen("P"));
+        ledgerBtn.setOnAction(e -> ledgerScreen());
+        exitBtn.setOnAction(e -> System.exit(0));
+
+        VBox vbox = new VBox(15, depositBtn, paymentBtn, ledgerBtn, exitBtn);
+        vbox.setAlignment(Pos.CENTER);
+        root.setCenter(vbox);
+        screenContainer.setCenter(root);
     }
 
     public void makeTransactionScreen(String option){
@@ -142,11 +169,4 @@ public class AccountingApplicationGUI extends Application {
 //  bottom text area box
     }
 
-    @Override
-    public void start(Stage primaryStage) {
-//  set screen container and scene to container
-//  add css to scene
-//  set stage to scene
-//  primaryStage.show()
-    }
 }

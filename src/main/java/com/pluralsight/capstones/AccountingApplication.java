@@ -61,39 +61,32 @@ public class AccountingApplication {
         return ledger;
     }
 
+    // Predefined report filters
+    public static ArrayList<Transactions> monthToDate() {
+        int month = java.time.LocalDate.now().getMonthValue();
+        int year = java.time.LocalDate.now().getYear();
+        return filterLedger(t -> t.getDate().getMonthValue() == month && t.getDate().getYear() == year);
+    }
 
-    // Method to display reports screen
-    public static void reportsScreen() {
-        String reportsScreenMenu = """
-                \nReports Display
-                1) Month To Date
-                2) Previous Month
-                3) Year To Date
-                4) Previous Year
-                5) Search by Vendor
-                6) Custom Search
-                0) Back
-                Enter option:\t""";
-        while (true) {
-            LocalDate current = LocalDate.now();
-            String option = screenMenuValidation(reportsScreenMenu, "0123456");
-            if (option.equalsIgnoreCase("0")) {
-                System.out.println("Back to Ledger...");
-                return;
-            } else if (option.equalsIgnoreCase("5")) {
-                String vendor = askUserStr("Enter the vendor name: ");
-                displayLedger(t -> vendor.equalsIgnoreCase(t.getVendor()));
-            }
-            switch (option) {
-                case "1" -> displayLedger(t -> (t.getDate().getMonthValue() == current.getMonthValue()) &&
-                        (t.getDate().getYear() == current.getYear()));
-                case "2" -> displayLedger(t -> (t.getDate().getMonthValue() == (current.getMonthValue() - 1)) &&
-                        (t.getDate().getYear() == current.getYear()));
-                case "3" -> displayLedger(t -> t.getDate().getYear() == current.getYear());
-                case "4" -> displayLedger(t -> t.getDate().getYear() == (current.getYear() - 1));
-                case "6" -> customSearch();
-            }
-        }
+    public static ArrayList<Transactions> previousMonth() {
+        java.time.LocalDate now = java.time.LocalDate.now();
+        int month = now.getMonthValue() == 1 ? 12 : now.getMonthValue() - 1;
+        int year = now.getMonthValue() == 1 ? now.getYear() - 1 : now.getYear();
+        return filterLedger(t -> t.getDate().getMonthValue() == month && t.getDate().getYear() == year);
+    }
+
+    public static ArrayList<Transactions> yearToDate() {
+        int year = java.time.LocalDate.now().getYear();
+        return filterLedger(t -> t.getDate().getYear() == year);
+    }
+
+    public static ArrayList<Transactions> previousYear() {
+        int year = java.time.LocalDate.now().getYear() - 1;
+        return filterLedger(t -> t.getDate().getYear() == year);
+    }
+
+    public static ArrayList<Transactions> filterByVendor(String vendor) {
+        return filterLedger(t -> t.getVendor().equalsIgnoreCase(vendor));
     }
 
     // Method to customize search and display it
