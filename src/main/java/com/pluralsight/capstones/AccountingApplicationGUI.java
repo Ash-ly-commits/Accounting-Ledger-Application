@@ -6,9 +6,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -161,16 +159,42 @@ public class AccountingApplicationGUI extends Application {
         screenContainer.setCenter(root);
     }
 
-    public void ledgerScreen(){
-//  border pane root
-//  top HBox of buttons below:
-//  Home button top left -> setaction homeScreen()
-//  Reports button top right -> setaction reportsScreen()
-//  display text area center
-//  bottom HBox of buttons below:
-//  Display All button -> setaction displayLedger(text area box thing, predicate all)
-//  Display Deposits button -> setaction displayLedger(text area box thing, predicate deposits)
-//  Display Payments button -> setaction displayLedger(text area box thing, predicate payments)
+    // Outputs ledger screen to display transactions
+    public void ledgerScreen() {
+        BorderPane root = createScreen("LEDGER");
+
+        Button backBtn = createButton("Home");
+        Button repBtn = createButton("Reports");
+
+        HBox topBox = new HBox(backBtn, new Region(), repBtn);
+        HBox.setHgrow(topBox.getChildren().get(1), Priority.ALWAYS);
+        topBox.setPadding(new Insets(10));
+        root.setTop(topBox);
+
+        TextArea ledgerView = new TextArea();
+        ledgerView.setEditable(false);
+        ledgerView.getStyleClass().add("textarea");
+        root.setCenter(ledgerView);
+
+        Button allBtn = createButton("All");
+        Button depBtn = createButton("Deposits");
+        Button payBtn = createButton("Payments");
+
+        HBox bottomBox = new HBox(10, allBtn, depBtn, payBtn);
+        bottomBox.setAlignment(Pos.CENTER);
+        bottomBox.setPadding(new Insets(10));
+        root.setBottom(bottomBox);
+
+        allBtn.setOnAction(e -> displayLedger(ledgerView, AccountingApplication.getLedger()));
+        depBtn.setOnAction(e -> displayLedger(ledgerView,
+                AccountingApplication.filterLedger(t -> t.getAmount() > 0)));
+        payBtn.setOnAction(e -> displayLedger(ledgerView,
+                AccountingApplication.filterLedger(t -> t.getAmount() < 0)));
+
+        repBtn.setOnAction(e -> reportsScreen());
+        backBtn.setOnAction(e -> homeScreen());
+
+        screenContainer.setCenter(root);
     }
 
     public void reportsScreen(){
