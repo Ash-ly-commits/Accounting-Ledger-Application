@@ -90,14 +90,15 @@ public class AccountingApplication {
     }
 
     // Method to customize search and display it
-    public static void customSearch(java.time.LocalDate start, java.time.LocalDate end,
-                                    String description, String vendor, Double amount) {
-        ArrayList<Transactions> report = ledger.stream()
-                .filter(e -> (finalStart == null || !e.getDate().isBefore(finalStart)))
-                .filter(e -> (finalEnd == null || !e.getDate().isAfter(finalEnd)))
-                .filter(e -> (description.isEmpty() || e.getDescription().contains(description)))
-                .filter(e -> (vendor.isEmpty() || e.getVendor().contains(vendor)))
-                .filter(e -> (finalAmount == null || e.getAmount() == finalAmount))
+    public static ArrayList<Transactions> customSearch(
+            java.time.LocalDate start, java.time.LocalDate end,
+            String description, String vendor, Double amount) {
+        return ledger.stream()
+                .filter(t -> start == null || !t.getDate().isBefore(start))
+                .filter(t -> end == null || !t.getDate().isAfter(end))
+                .filter(t -> description == null || description.isEmpty() || t.getDescription().contains(description))
+                .filter(t -> vendor == null || vendor.isEmpty() || t.getVendor().contains(vendor))
+                .filter(t -> amount == null || t.getAmount() == amount)
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 }

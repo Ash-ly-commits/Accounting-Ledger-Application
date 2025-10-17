@@ -245,17 +245,6 @@ public class AccountingApplicationGUI extends Application {
         screenContainer.setCenter(root);
     }
 
-    public void vendorScreen(){
-//  border pane root
-//  Reports button top left -> setaction reportsScreen()
-
-//  display text area center
-
-//  bottom Hbox of buttons below:
-//  vendor label on bottom left, text field in bottom middle for response
-//  submit button bottom right -> setaction try{ getText from field & displayLedger(text area box, predicate)
-    }
-
     // Outputs custom search screen to allow user to be more specific with what they filter from transactions
     public void customSearchScreen() {
         BorderPane root = new BorderPane();
