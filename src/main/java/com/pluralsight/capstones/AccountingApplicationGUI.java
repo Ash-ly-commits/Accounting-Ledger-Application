@@ -7,12 +7,16 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 
@@ -101,15 +105,60 @@ public class AccountingApplicationGUI extends Application {
         screenContainer.setCenter(root);
     }
 
-    public void makeTransactionScreen(String option){
-//  border pane root
-//  "Enter transaction info. " label on top
-//  description label on left, text field on right for response
-//  vendor label on left, text field on right for response
-//  amount label on left, text field on right for response
-//  submit button bottom right -> setaction try{ getText from fields & call makeTransaction(option, description,
-//  vendor, amount) } catch (Exception e) {showAlert() }
-//  if try goes through fine, setText("Transaction added") & then back to homeScreen()
+    // Outputs screen to input transaction info
+    public void makeTransactionScreen(String option) {
+        BorderPane root = createScreen(option.equalsIgnoreCase("D") ? "ADD DEPOSIT" : "MAKE PAYMENT");
+
+        Button backBtn = createButton("Back");
+        backBtn.setOnAction(e -> homeScreen());
+        HBox topBox = new HBox(backBtn);
+        topBox.setAlignment(Pos.TOP_LEFT);
+        topBox.setPadding(new Insets(10));
+        root.setTop(topBox);
+
+        TextField descField = createTextField("Description");
+        TextField vendorField = createTextField("Vendor");
+        TextField amountField = createTextField("Amount");
+
+        Button submitBtn = createButton("Submit");
+        VBox centerBox = new VBox(15, descField, vendorField, amountField, submitBtn);
+        centerBox.setAlignment(Pos.CENTER);
+        centerBox.setPadding(new Insets(20));
+        root.setCenter(centerBox);
+
+        Label successLabel = new Label();
+        successLabel.setTextFill(Color.CYAN);
+        successLabel.setFont(Font.font("Sevastopol", FontWeight.BOLD, 20));
+        successLabel.setVisible(false);
+        HBox bottomBox = new HBox(successLabel);
+        bottomBox.setAlignment(Pos.CENTER);
+        bottomBox.setPadding(new Insets(10));
+        root.setBottom(bottomBox);
+
+        submitBtn.setOnAction(e -> {
+            try {
+                LocalDate date = LocalDate.now();
+                LocalTime time = LocalTime.now().truncatedTo(ChronoUnit.SECONDS);
+                double amount = Double.parseDouble(amountField.getText());
+                if (option.equalsIgnoreCase("P")) amount *= -1;
+
+                Transactions t = new Transactions(date, time, descField.getText(), vendorField.getText(), amount);
+                AccountingApplication.addTransaction(t);
+
+                successLabel.setText("Transaction added.");
+                successLabel.setVisible(true);
+
+                descField.clear();
+                vendorField.clear();
+                amountField.clear();
+            } catch (NumberFormatException ex) {
+                showAlert("Invalid Amount", "Please enter a valid number for amount.");
+            } catch (Exception ex) {
+                showAlert("Transaction Error", "Could not add transaction: " + ex.getMessage());
+            }
+        });
+
+        screenContainer.setCenter(root);
     }
 
     public void ledgerScreen(){
