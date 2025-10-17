@@ -1,29 +1,70 @@
 package com.pluralsight.capstones;
 
 import javafx.application.Application;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.*;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
+
+import java.util.ArrayList;
+import java.util.Comparator;
 
 public class AccountingApplicationGUI extends Application {
 
-    //I'm thinking border pane root
+    private BorderPane screenContainer;
+
     public static void main(String[] args) {
         launch();
     }
 
-    public BorderPane createScreen(String headerTitle){
-//  BorderPane border = new BorderPane
-//  border details
-//  Label title = new Label(headerTitle)
-//  title details
-//  return border
+    private BorderPane createScreen(String headerTitle){
+        BorderPane border = new BorderPane();
+        border.setPadding(new Insets(20));
+
+        Label title = new Label(headerTitle);
+        title.setFont(Font.font("Sevastopol", FontWeight.BOLD, 36));
+        title.setTextFill(Color.CYAN);
+        title.setEffect(new DropShadow(20, Color.CYAN));
+
+        BorderPane.setAlignment(title, Pos.TOP_CENTER);
+        border.setCenter(title);
+        return border;
     }
 
-    public void createTextArea(){}
+    private TextField createTextField(String prompt) {
+        TextField tf = new TextField();
+        tf.setPromptText(prompt);
+        tf.getStyleClass().add("field");
+        return tf;
+    }
 
-    public void createButton(){}
+    private Button createButton(String text) {
+        Button btn = new Button(text);
+        btn.getStyleClass().add("button");
+        return btn;
+    }
 
-    public void showAlert(){}
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setHeaderText(title);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private void displayLedger(TextArea area, ArrayList<Transactions> transactions) {
+        StringBuilder sb = new StringBuilder();
+        transactions.stream()
+                .sorted(Comparator.comparing(Transactions::getDate)
+                        .thenComparing(Transactions::getTime).reversed())
+                .forEach(t -> sb.append(String.format("%s | %s | %-15s | %-15s | %.2f\n",
+                        t.getDate(), t.getTime(), t.getDescription(), t.getVendor(), t.getAmount())));
+        area.setText(sb.toString());
+    }
 
     public void homeScreen(){
 //  border plan root
